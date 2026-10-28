@@ -98,19 +98,19 @@ ESLORAS_BARCOS [2, 2, 2, 3, 3, 4]
 
 ````
 
-* Flujo del algoritmo: crear_barco() genera una lista de propuesta de posiciones (ej. [(0,1), (0,2)]). Lee la matriz defensora actual: si en esas celdas encuentra 🟦, valida la operación; si encuentra 🚢, descarta los datos y vuelve a ciclar.
-* Persistencia: Al ser validada, colocar_barco() reescribe esas celdas específicas en la matriz correspondiente, cambiando el dato 🟦 por 🚢.
+* Flujo del algoritmo: crear_barco() genera una lista de propuesta de posiciones (ej. [(0,1), (0,2)]). Lee la matriz defensora actual: si en esas celdas encuentra 🟦, valida la operación; si encuentra 🚢, descarta los datos y vuelve al bucle hasta encontrar una propuesta válida.
+* Al ser validada, colocar_barco() reescribe esas celdas específicas en la matriz correspondiente, cambiando el dato 🟦 por 🚢.
 
 
 
 3. El Ciclo de Datos en el Turno (Entrada, Procesamiento y Salida)
 
-Esta es la parte central de tu exposición. Durante el juego, los datos fluyen en un circuito cerrado:
+Durante el juego, los datos fluyen en un circuito cerrado:
 ````
  [ENTRADA] Usuario/IA ingresa Coordenadas (Fila, Columna)
    │
    ▼
- [PROCESAMIENTO] Función disparar() intersecta las coordenadas con las Matrices
+ [PROCESAMIENTO] Función disparar() cruza las coordenadas con las Matrices
    │
    ├──► Consulta: ¿tablero_defensor[Fila, Columna] == "🚢"?
    │      │
@@ -133,16 +133,16 @@ Esta es la parte central de tu exposición. Durante el juego, los datos fluyen e
 
 4. Flujo de Datos para la Condición de Cierre
 
-Tras cada disparo exitoso (True), se ejecuta la función comprobar_fin_juego(). El flujo de control aquí es sumamente eficiente gracias a NumPy:
+Tras cada disparo exitoso (True), se ejecuta la función comprobar_fin_juego(). El flujo de control aquí gracias a NumPy es  más eficiente :
 1. Escaneo de memoria: La función realiza una búsqueda booleana directa en la matriz defensora: variables.BARCO in tablero_barcos.
 2. Evaluación: NumPy no recorre celda por celda de forma lenta en Python; hace una búsqueda vectorizada a nivel de C (lenguaje nativo de NumPy) buscando el string 🚢.
 3. Decisión:
-	* Si el resultado es True (queda al menos un barco), el flujo del bucle principal (juego_activo) continúa intacto.
-	* Si el resultado es False (el caracter 🚢 se ha extinguido por completo del array), el flujo de datos de la partida se interrumpe modificando el flag juego_activo = False, provocando la ruptura del bucle while y el cierre del programa.
+	* Si el resultado es True (queda al menos un barco), el flujo del bucle principal (juego_activo) continúa.
+	* Si el resultado es False (el caracter 🚢 se ha extinguido por completo del array), el flujo de datos de la partida se interrumpe modificando el flag juego_activo = False, provocando la ruptura del bucle while y la finalización del programa.
 
 
 ## Pseudocódigo (Descripción simplificada del algoritmo)
-
+````
 // ==========================================
 // CONFIGURACIÓN Y VARIABLES GLOBALES
 // ==========================================
@@ -347,3 +347,4 @@ INICIO
         
     FIN MIENTRAS
 FIN
+````
