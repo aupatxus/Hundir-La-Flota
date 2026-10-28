@@ -42,7 +42,7 @@ Hundir La Flota http://es.battleship-game.org/
  ├── 🛠️ crear_tablero()          ──► Genera matrices vacías con NumPy
  ├── ⚙️ colocar_barco()          ──► Modifica celdas para incrustar un barco 
  ├── 🎲 crear_barco()            ──► Algoritmo de posicionamiento aleatorio (Horizontal/Vertical)
- ├── 🔄 colocar_barcos()         ──► Bucle de reintentos anti-solapamiento
+ ├── 🔄 colocar_flota()          ──► Bucle de reintentos anti-solapamiento
  ├── 🎯 disparar()               ──► Evalúa el impacto y actualiza los tableros
  ├── 🏁 comprobar_fin_juego()    ──► Valida si la condición de victoria se cumple
  └── 📺 mostrar_tableros_jugador ──► Formatea y dibuja la interfaz en la consola
@@ -98,7 +98,7 @@ ESLORAS_BARCOS [2, 2, 2, 3, 3, 4]
 
 ````
 
-* Flujo del algoritmo: crear_barco() genera una lista de propuesta de posiciones (ej. [(0,1), (0,2)]). Lee la matriz defensora actual: si en esas celdas encuentra 🟦, valida la operación; si encuentra 🚢, descarta los datos y vuelve al bucle hasta encontrar una propuesta válida.
+* Flujo del algoritmo: crear_barco() genera una lista de propuesta de posiciones (ej. [(0,1), (0,2)]). Lee la matriz defensora actual: si en esas celdas encuentra 🟦, valida la operación; si encuentra 🚢, descarta los datos propuestos y vuelve al bucle hasta encontrar una propuesta válida.
 * Al ser validada, colocar_barco() reescribe esas celdas con la propuesta validada en la matriz correspondiente, cambiando el dato 🟦 por 🚢.
 
 
