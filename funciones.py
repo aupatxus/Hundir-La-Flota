@@ -1,14 +1,17 @@
 
 
-#crear_tableros(tamaño)
-#colocar_barco(barco, tablero)
-#disparar(casilla, tablero_barcos, tablero_disparos)
-#crear_barco(eslora, tamaño_tablero=10)
-
-
-
 # funciones.py
-# Este archivo contiene la lógica del juego: inicialización, colocación aleatoria, disparos y mecánicas de juego.
+# Este archivo contiene la lógica y mecánicas del juego: inicialización, colocación aleatoria, disparos, comprobaciones, ...
+
+# crear_tableros(tamaño)
+# colocar_barco(barco, tablero)
+# disparar(casilla, tablero_barcos, tablero_disparos)
+# crear_barco(eslora, tamaño_tablero=10)
+# colocar_flota(tablero)
+# comprobar_fin_juego(tablero_barcos)
+# mostrar_tableros_jugador(tablero_barcos, tablero_disparos)
+
+
 
 import numpy as np
 import variables
@@ -104,7 +107,7 @@ def crear_barco(eslora, tablero):
 
 
 
-def colocar_barcos(tablero):
+def colocar_flota(tablero):
     """Genera y coloca todos los barcos de la lista de esloras en el tablero de forma aleatoria."""
     for eslora in variables.ESLORAS_BARCOS:
         barco_colocado = False
@@ -131,11 +134,17 @@ def comprobar_fin_juego(tablero_barcos):
 
 
 def mostrar_tableros_jugador(tablero_barcos, tablero_disparos):
-    """Muestra por terminal o consola los tableros del jugador."""
-    print("\n********* TU TABLERO DE BARCOS ***********")
-    print(tablero_barcos)
-    print("********* TU TABLERO DE DISPAROS **********")
-    print("   0   1   2   3   4   5   6   7   8   9 ")
+    """Muestra por terminal o consola los tableros del jugador con coordenadas filas y columnas."""
+    
+    cabecera_columnas = "  0  1  2  3  4  5  6  7  8  9"
+    print("\n***** MI FLOTA DE BARCOS ******")
+    print(cabecera_columnas)
+    for i, fila in enumerate(tablero_barcos):
+        # Imprime el número de fila (0-9) 
+        print(str(i) + " ".join(fila))
+    print("\n***** LA FLOTA DEL ENEMIGO ****")   
+    print(cabecera_columnas)
+    for i, fila in enumerate(tablero_disparos):
+        print(str(i) + " ".join(fila))
+    print("*******************************\n")
 
-    print(tablero_disparos)
-    print("*******************************************")
