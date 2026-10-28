@@ -32,7 +32,7 @@ Hundir La Flota http://es.battleship-game.org/
 
 ````
 ## Estructura de Datos y Funciones 
-
+````
 📁 variables.py [Configuración del Sistema]
  └── TAMANO_TABLERO (10)
  └── Simbología Gráfica (🟦, 🚢, 💥, ❌)
@@ -52,7 +52,7 @@ Hundir La Flota http://es.battleship-game.org/
  ├── 2. Setup Inicial  ──► Invoca la distribución aleatoria de las dos flotas
  ├── 3. Sorteo Turno   ──► De modo aleatorio se establece el turno de inicio para ver quién ataca primero
  └── 4. Bucle Activo   ──► Ciclo continuo que alterna turnos de disparo (Try/Except)
-
+````
 
 
 ## El Flujo de Ejecución (El Ciclo de Vida del Juego)
