@@ -41,7 +41,7 @@ Hundir La Flota http://es.battleship-game.org/
 📁 funciones.py [Lógica de Control Automática]
  ├── 🛠️ crear_tablero()          ──► Genera matrices vacías con NumPy
  ├── ⚙️ colocar_barco()          ──► Modifica celdas para incrustar un barco 
- ├── 🎲 crear_barco()            ──► Algoritmo de posicionamiento aleatorio (H/V)
+ ├── 🎲 crear_barco()            ──► Algoritmo de posicionamiento aleatorio (Horizontal/Vertical)
  ├── 🔄 colocar_barcos()         ──► Bucle de reintentos anti-solapamiento
  ├── 🎯 disparar()               ──► Evalúa el impacto y actualiza los tableros
  ├── 🏁 comprobar_fin_juego()    ──► Valida si la condición de victoria se cumple
@@ -69,7 +69,7 @@ Hundir La Flota http://es.battleship-game.org/
 
 1. Estado Inicial de la Memoria (La Creación del Espacio de Datos)
 
-Cuando arranca el programa, el flujo de datos comienza llamando a crear_tablero(). Esta función reserva espacio en memoria RAM a través de NumPy mediante matrices bidimensionales indexadas por coordenadas (X, Y).
+Cuando arranca el programa, el flujo de datos comienza llamando a crear_tablero(). Esta función reserva espacio en memoria RAM a través de NumPy mediante matrices bidimensionales indexadas por coordenadas (X, Y) de fila/columna.
 
 El flujo de datos en esta fase es:
 * Entrada: La constante TAMANO_TABLERO (10) y el string AGUA (🟦).
@@ -82,9 +82,9 @@ El flujo de datos en esta fase es:
 
 
 
-2. Flujo de Colocación (Transformación de Matrices Vías Coordenadas)
+2. Flujo de Colocación (Transformación de Matrices a través de Coordenadas)
 
-El juego pasa de un estado vacío a un estado poblado mediante el paso de tuplas de coordenadas:
+El juego pasa de un estado de mar vacío a un estado de mar concurrido con la flota de barcos mediante el paso de tuplas de coordenadas:
 
 ````
 Variables:
@@ -99,7 +99,7 @@ ESLORAS_BARCOS [2, 2, 2, 3, 3, 4]
 ````
 
 * Flujo del algoritmo: crear_barco() genera una lista de propuesta de posiciones (ej. [(0,1), (0,2)]). Lee la matriz defensora actual: si en esas celdas encuentra 🟦, valida la operación; si encuentra 🚢, descarta los datos y vuelve al bucle hasta encontrar una propuesta válida.
-* Al ser validada, colocar_barco() reescribe esas celdas específicas en la matriz correspondiente, cambiando el dato 🟦 por 🚢.
+* Al ser validada, colocar_barco() reescribe esas celdas con la propuesta validada en la matriz correspondiente, cambiando el dato 🟦 por 🚢.
 
 
 
@@ -133,12 +133,12 @@ Durante el juego, los datos fluyen en un circuito cerrado:
 
 4. Flujo de Datos para la Condición de Cierre
 
-Tras cada disparo exitoso (True), se ejecuta la función comprobar_fin_juego(). El flujo de control aquí gracias a NumPy es  más eficiente :
+Tras cada disparo exitoso (True), se ejecuta la función comprobar_fin_juego(). El flujo de control aquí gracias a NumPy es  más eficiente:
 1. Escaneo de memoria: La función realiza una búsqueda booleana directa en la matriz defensora: variables.BARCO in tablero_barcos.
 2. Evaluación: NumPy no recorre celda por celda de forma lenta en Python; hace una búsqueda vectorizada a nivel de C (lenguaje nativo de NumPy) buscando el string 🚢.
 3. Decisión:
 	* Si el resultado es True (queda al menos un barco), el flujo del bucle principal (juego_activo) continúa.
-	* Si el resultado es False (el caracter 🚢 se ha extinguido por completo del array), el flujo de datos de la partida se interrumpe modificando el flag juego_activo = False, provocando la ruptura del bucle while y la finalización del programa.
+	* Si el resultado es False (el caracter 🚢 ha desaparecido por completo del array), el flujo de datos de la partida se interrumpe modificando el flag juego_activo = False, provocando la ruptura del bucle while y la finalización del programa.
 
 
 ## Pseudocódigo (Descripción simplificada del algoritmo)
