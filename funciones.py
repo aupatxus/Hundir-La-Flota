@@ -33,11 +33,14 @@ def disparar(casilla, tablero_barcos_defensor, tablero_disparos_atacante):
     """
     fila = casilla[0]
     columna = casilla[1]
+
     if tablero_barcos_defensor[fila, columna] == variables.BARCO: # Si hay un barco, es un acierto
         tablero_barcos_defensor[fila, columna] = variables.TOCADO
         tablero_disparos_atacante[fila, columna] = variables.TOCADO
         return True
+    
     else:
+
         if tablero_barcos_defensor[fila, columna] == variables.AGUA: # Si es agua, se procesa como fallo
             tablero_barcos_defensor[fila, columna] = variables.FALLO
             tablero_disparos_atacante[fila, columna] = variables.FALLO
@@ -52,51 +55,86 @@ def crear_barco(eslora, tablero):
     Devuelve la lista de casillas si es válido, o una lista vacía si hay conflicto.
     """
     orientacion = np.random.randint(0, 2) # 0 para Horizontal, 1 para Vertical
+
     if orientacion == 0: # Horizontal
         fila_inicial = np.random.randint(0, variables.TAMANO_TABLERO)
         columna_inicial = np.random.randint(0, variables.TAMANO_TABLERO - eslora + 1)
         casillas_propuestas = []
         valido = True
+
         for desplazamiento in range(eslora): # Comprobar solapamientos
             columna_actual = columna_inicial + desplazamiento
+
             if tablero[fila_inicial, columna_actual] == variables.BARCO:
                 valido = False
             else:
                 casillas_propuestas.append((fila_inicial, columna_actual))
+
         if valido:
             return casillas_propuestas
         else:
             return []
+        
     else: # Vertical
         fila_inicial = np.random.randint(0, variables.TAMANO_TABLERO - eslora + 1)
         columna_inicial = np.random.randint(0, variables.TAMANO_TABLERO)
         casillas_propuestas = []
         valido = True
+
         for desplazamiento in range(eslora): # Comprobar solapamientos
             fila_actual = fila_inicial + desplazamiento
+
             if tablero[fila_actual, columna_inicial] == variables.BARCO:
                 valido = False
             else:
                 casillas_propuestas.append((fila_actual, columna_inicial))
+
         if valido:
             return casillas_propuestas
         else:
             return []
 
+'''
 def colocar_flota(tablero):
     """Genera y coloca todos los barcos de la lista de esloras en el tablero de forma aleatoria."""
     for eslora in variables.ESLORAS_BARCOS:
         barco_colocado = False
+
         while not barco_colocado: # Bucle de reintento hasta que el barco encuentra un sitio válido sin solaparse
             lista_casillas = crear_barco(eslora, tablero)
+
             if len(lista_casillas) > 0:
                 tablero = colocar_barco(lista_casillas, tablero)
                 barco_colocado = True
+    return tablero
+'''
+
+def colocar_flota(tablero, es_jugador=True):
+    """Genera, coloca los barcos y guarda sus posiciones para el seguimiento de hundidos."""
+    flota_registro = []
+
+    for eslora in variables.ESLORAS_BARCOS:
+        barco_colocado = False
+
+        while not barco_colocado:
+            lista_casillas = crear_barco(eslora, tablero)
+
+            if len(lista_casillas) > 0:
+                tablero = colocar_barco(lista_casillas, tablero)
+                flota_registro.append(lista_casillas)
+                barco_colocado = True
+                
+    if es_jugador: # Guardamos en la variable correspondiente de variables.py
+        variables.FLOTA_JUGADOR = flota_registro
+    else:
+        variables.FLOTA_MAQUINA = flota_registro
+        
     return tablero
 
 def comprobar_fin_juego(tablero_barcos):
     """Devuelve True si ya no quedan barcos ('O') en el tablero."""
     quedan_barcos = variables.BARCO in tablero_barcos
+
     if not quedan_barcos:
         return True
     else:
@@ -107,13 +145,17 @@ def mostrar_tableros_jugador(tablero_barcos, tablero_disparos):
     cabecera_columnas = "  0  1  2  3  4  5  6  7  8  9"
     print("\n***** MI FLOTA DE BARCOS ******")
     print(cabecera_columnas)
+
     for i, fila in enumerate(tablero_barcos):
         # Imprime el número de fila (0-9) 
         print(str(i) + " ".join(fila))
+
     print("\n***** LA FLOTA DEL ENEMIGO ****")   
     print(cabecera_columnas)
+
     for i, fila in enumerate(tablero_disparos):
         print(str(i) + " ".join(fila))
+
     print("*******************************\n")
 
 def obtener_adyacentes_validas(casilla, tablero_disparos_rival):
@@ -121,10 +163,34 @@ def obtener_adyacentes_validas(casilla, tablero_disparos_rival):
     fila, columna = casilla
     adyacentes = []
     movimientos = [(-1, 0), (1, 0), (0, -1), (0, 1)] # Posibles movimientos: Arriba, Abajo, Izquierda, Derecha
+
     for df, dc in movimientos:
         nueva_f = fila + df
         nueva_c = columna + dc
+
         if 0 <= nueva_f < variables.TAMANO_TABLERO and 0 <= nueva_c < variables.TAMANO_TABLERO: # Comprobar que está dentro del tablero
             if tablero_disparos_rival[nueva_f, nueva_c] == variables.AGUA: # Comprobar que no se haya disparado ya en esa casilla (que siga siendo AGUA o BARCO oculto)
                 adyacentes.append((nueva_f, nueva_c))
+
     return adyacentes
+
+def contar_barcos_hundidos(flota_registro, tablero_barcos):
+    """
+    Recorre cada barco registrado y verifica si todas sus casillas pasaron a ser '💥'.
+    Devuelve el número total de barcos completamente hundidos.
+    """
+    hundidos = 0
+
+    for barco in flota_registro:
+        
+        completamente_hundido = True # Un barco está hundido si ninguna de sus casillas contiene el carácter BARCO ('🚢')
+
+        for fila, columna in barco:
+            if tablero_barcos[fila, columna] == variables.BARCO:
+                completamente_hundido = False
+                break
+
+        if completamente_hundido:
+            hundidos = hundidos + 1
+
+    return hundidos

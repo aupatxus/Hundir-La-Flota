@@ -16,19 +16,26 @@ tablero_disparos_jugador = funciones.crear_tablero()
 tablero_barcos_rival = funciones.crear_tablero()
 tablero_disparos_rival = funciones.crear_tablero()
     
-# Colocación de barcos 
-tablero_barcos_jugador = funciones.colocar_flota(tablero_barcos_jugador)
-tablero_barcos_rival = funciones.colocar_flota(tablero_barcos_rival)
+# Colocación de barcos v0
+# tablero_barcos_jugador = funciones.colocar_flota(tablero_barcos_jugador)
+# tablero_barcos_rival = funciones.colocar_flota(tablero_barcos_rival)
+
+# Colocación de barcos v1 (añadimos el argumento para identificar el dueño)
+tablero_barcos_jugador = funciones.colocar_flota(tablero_barcos_jugador, es_jugador=True)
+tablero_barcos_rival = funciones.colocar_flota(tablero_barcos_rival, es_jugador=False)
+
 
 # Determinar aleatoriamente quién empieza la partida (el turno de inicio)
 turno_jugador = False
 turno_de_inicio = np.random.randint(0, 2) # 1 = Turno Jugador, 0 = Turno Máquina
+
 if turno_de_inicio == 1:
     turno_jugador = True
     print("Empiezas jugando tú", nombre_jugador)
 else:
     print("Empieza jugando LA MÁQUINA 🤖...")
 juego_activo = True
+
 while juego_activo:
     if turno_jugador:
         print("\nEs tu turno", nombre_jugador)
@@ -36,6 +43,7 @@ while juego_activo:
         
         # Entrada de coordenadas por terminal/consola 
         fila_valida = False
+
         while not fila_valida:
             try:
                 fila_entrada = int(input("🎯 introduce fila (0-" + str(variables.TAMANO_TABLERO-1) + "): "))
@@ -46,6 +54,7 @@ while juego_activo:
             except ValueError:
                 print("⚠️ Error: ¡Debes introducir un dígito numérico para la fila!", nombre_jugador)
         columna_valida = False
+
         while not columna_valida:
             try:
                 columna_entrada = int(input("🎯 introduce columna (0-" + str(variables.TAMANO_TABLERO-1) + "): "))
@@ -61,10 +70,16 @@ while juego_activo:
         acierto = funciones.disparar(casilla_disparo, tablero_barcos_rival, tablero_disparos_jugador)
         if acierto:
             print("\nTOCADO! 💥 Tu disparo ha acertado en uno de los barcos enemigos 🚢💥... ")
-            # Al comprobar el fin del juego, si es verdadero, termina la partida
-            if funciones.comprobar_fin_juego(tablero_barcos_rival):
-                print("\n¡ENHORABUENA", nombre_jugador,"!. Has 🔥 TOCADO Y HUNDIDO 🔥 todos los barcos de la máquina. ¡HAS GANADO!")
+            
+            # CÁLCULO Y MUESTRA DE BARCOS ENEMY HUNDIDOS
+            total_barcos = len(variables.ESLORAS_BARCOS)
+            maquina_hundidos = funciones.contar_barcos_hundidos(variables.FLOTA_MAQUINA, tablero_barcos_rival)
+            print("ℹ️ ¡Informe de Inteligencia📄! 📢 Se han hundido "+ str(maquina_hundidos)+ " barcos de la flota de "+str(total_barcos)+" barcos enemigos.")
+            
+            if funciones.comprobar_fin_juego(tablero_barcos_rival): # Al comprobar el fin del juego, si es verdadero, termina la partida
+                print("\n📣¡ENHORABUENA", nombre_jugador,"!. Has 🔥 TOCADO Y HUNDIDO 🔥 todos los barcos de la máquina. ¡HAS GANADO!")
                 juego_activo = False
+
         else:
             print("\n¡AGUA! 💦 Has fallado tu disparo.")
             turno_jugador = False # Cambio de turno
@@ -89,9 +104,15 @@ while juego_activo:
 
         print("La máquina dispara a la casilla: 🎯 Fila:", fila_maquina, "y Columna:", columna_maquina)
         acierto_maquina = funciones.disparar(casilla_maquina, tablero_barcos_jugador, tablero_disparos_rival)
-        
+
         if acierto_maquina: # GESTIÓN DEL DISPARO CONTRA EL JUGADOR
-            print("¡La máquina te ha TOCADO uno de tus barcos! 🚢💥... la máquina activa el modo caza 🤬")
+            print("¡La máquina te ha TOCADO uno de tus barcos! 🚢💥... ⚠️ la máquina ha activado el modo inteligencia de guerra 🤬")
+            
+            # CÁLCULO Y MUESTRA DE BARCOS HUNDIDOS DEL JUGADOR
+            total_barcos = len(variables.ESLORAS_BARCOS)
+            jugador_hundidos = funciones.contar_barcos_hundidos(variables.FLOTA_JUGADOR, tablero_barcos_jugador)
+            print("ℹ️ ¡Informe de Inteligencia📄! 📢 ¡Atención! La máquina ha hundido "+str(jugador_hundidos) +" barcos de tu flota de " +str(total_barcos) +" barcos.")
+            
             variables.IA_MODO_CAZA = True # ACTIVAR MODO CAZA
             variables.IA_ULTIMO_TOCADO = casilla_maquina
             nuevas_adyacentes = funciones.obtener_adyacentes_validas(casilla_maquina, tablero_disparos_rival) # Obtener nuevas adyacentes desde este nuevo impacto y sumarlas a la lista de objetivos
@@ -99,9 +120,9 @@ while juego_activo:
             for adyacente in nuevas_adyacentes:
                 if adyacente not in variables.IA_ADYACENTES_PENDIENTES:
                     variables.IA_ADYACENTES_PENDIENTES.append(adyacente)
-        
+
             if funciones.comprobar_fin_juego(tablero_barcos_jugador): # Comprobar si la máquina ha ganado
-                print("\n¡Lo siento! La máquina ha 🔥 TOCADO Y HUNDIDO 🔥 todos tus barcos. ¡HAS PERDIDO", nombre_jugador, "! Gracias por jugar.")
+                print("\n¡Lo siento! La máquina ha 🔥 TOCADO Y HUNDIDO 🔥 todos tus barcos. 📣 ¡HAS PERDIDO", nombre_jugador, "! Gracias por jugar.")
                 juego_activo = False
         else:
             print("La máquina ha disparado al AGUA... 💦")

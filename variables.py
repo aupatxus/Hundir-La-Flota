@@ -22,3 +22,7 @@ ESLORAS_BARCOS = [4, 3, 3, 2, 2, 2]
 IA_MODO_CAZA = False
 IA_ULTIMO_TOCADO = None
 IA_ADYACENTES_PENDIENTES = []
+
+# Registros de las estructuras de barcos para el conteo de hundidos
+FLOTA_JUGADOR = []
+FLOTA_MAQUINA = []
