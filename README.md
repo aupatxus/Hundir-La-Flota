@@ -10,6 +10,13 @@ Hundir La Flota http://es.battleship-game.org/
 
 ## Estructura de Archivos (Arquitectura de Módulos)
 ````
+📁 Proyecto Hundir la Flota
+├── 📄 variables.py  --> Configuración global, constantes y estados de la IA.
+├── 📄 funciones.py  --> Lógica de control, gestión de matrices y algoritmos de disparo.
+└── 📄 main.py       --> Orquestador principal del ciclo de vida del juego.
+
+
+
        ┌─────────────────┐
        │   variables.py  │  ◄──────────────────────────┐
        │(Datos estáticos)│                             │
@@ -55,6 +62,8 @@ Hundir La Flota http://es.battleship-game.org/
 ````
 
 
+
+
 ## El Flujo de Ejecución (El Ciclo de Vida del Juego)
 
 1. Fase de Setup (Inicio): El main.py arranca ──► Llama a funciones.crear_tablero() 4 veces ──► Almacena las matrices en las variables de juego ──► Llama a funciones.colocar_barcos() para poblar el mapa del usuario y el de la máquina.
@@ -68,6 +77,7 @@ Hundir La Flota http://es.battleship-game.org/
 ## Flujograma (Diagrama de flujo)
 
 
+* Flujograma de la versión inicial:
 
 ```mermaid
 graph TD
@@ -129,6 +139,68 @@ graph TD
     class Ganaste,Perdiste fin;
 ```
 
+
+* Flujograma de la versión avanzada:
+
+```mermaid
+graph TD
+    %% Configuración de estilos
+    classDef inicio fill:#2ecc71,stroke:#27ae60,stroke-width:2px,color:#fff;
+    classDef proceso fill:#3498db,stroke:#2980b9,stroke-width:2px,color:#fff;
+    classDef decision fill:#f1c40f,stroke:#f39c12,stroke-width:2px,color:#000;
+    classDef fin fill:#e74c3c,stroke:#c0392b,stroke-width:2px,color:#fff;
+
+    Inicio([Inicio de Partida]) --> Setup[Cargar variables.py <br> Inicializar 4 matrices]:::proceso
+    Setup --> Flotas[funciones.colocar_flota <br> Generar flotas en memoria]:::proceso
+    Flotas --> Sorteo{¿Quién inicia?}:::decision
+    
+    Sorteo -- 1 --> TurnoJ[Turno: JUGADOR]:::proceso
+    Sorteo -- 0 --> TurnoM[Turno: MÁQUINA]:::proceso
+
+    %% Bloque Jugador
+    TurnoJ --> PrintTab[funciones.mostrar_tableros_jugador]:::proceso
+    PrintTab --> InputFila[Input: Fila del disparo]:::proceso
+    InputFila --> ValidaFila{¿Es entero <br> en rango?}:::decision
+    ValidaFila -- No --> ErrorF[Mostrar Error Fila]:::proceso --> InputFila
+    
+    ValidaFila -- Sí --> InputCol[Input: Columna del disparo]:::proceso
+    InputCol --> ValidaCol{¿Es entero <br> en rango?}:::decision
+    ValidaCol -- No --> ErrorC[Mostrar Error Columna]:::proceso --> InputCol
+
+    ValidaCol -- Sí --> DispJ[funciones.disparar contra Máquina]:::proceso
+    DispJ --> ResJ{¿Acierto?}:::decision
+    
+    ResJ -- Sí 💥 --> RangoJ[Calcular Impactos <br> Ascender Rango Militar]:::proceso
+    RangoJ --> WinJ{¿Quedan barcos <br> de la Máquina?}:::decision
+    WinJ -- Sí --> TurnoJ
+    WinJ -- No --> FinWin([¡VICTORIA DEL JUGADOR! 🎉]):::fin
+    
+    ResJ -- No ❌ --> CambiarM[Cambio de Turno]:::proceso --> TurnoM
+
+    %% Bloque Máquina
+    TurnoM --> CheckCaza{¿Modo Caza Activo <br> y objetivos en cola?}:::decision
+    CheckCaza -- Sí --> TargetCaza[Extraer casilla de la cola <br> variables.IA_ADYACENTES_PENDIENTES]:::proceso
+    CheckCaza -- No --> TargetRandom[Generar coordenadas al azar <br> sin repetir casilla disparada]:::proceso
+    
+    TargetCaza --> DispM[funciones.disparar contra Jugador]:::proceso
+    TargetRandom --> DispM
+    
+    DispM --> ResM{¿Acierto?}:::decision
+    
+    ResM -- Sí 💥 --> ActivarCaza[variables.IA_MODO_CAZA = True <br> Sumar nuevas adyacentes a la cola]:::proceso
+    ActivarCaza --> WinM{¿Quedan barcos <br> del Jugador?}:::decision
+    WinM -- Sí --> TurnoM
+    WinM -- No --> FinLose([¡DERROTA! La Máquina Gana 🤖]):::fin
+    
+    ResM -- No ❌ --> CheckCola{¿Cola vacía?}:::decision
+    CheckCola -- Sí --> ApagarCaza[variables.IA_MODO_CAZA = False]:::proceso --> CambiarJ[Cambio de Turno]:::proceso
+    CheckCola -- No --> CambiarJ --> TurnoJ
+
+    class Setup,Flotas,TurnoJ,PrintTab,InputFila,InputCol,ErrorF,ErrorC,DispJ,RangoJ,TurnoM,TargetCaza,TargetRandom,DispM,ActivarCaza,ApagarCaza,CambiarM,CambiarJ proceso;
+    class Sorteo,ValidaFila,ValidaCol,ResJ,WinJ,CheckCaza,ResM,WinM,CheckCola decision;
+    class Inicio inicio;
+    class FinWin,FinLose fin;
+````
 
 
 
@@ -414,4 +486,80 @@ INICIO
         
     FIN MIENTRAS
 FIN
+````
+
+* Pseudocódigo de la versión avanzada:
+
+````
+ALGORITMO JuegoHundirLaFlota
+    Cargar Configuración de variables.py (Tamaño del Tablero, Flotas, Rangos)
+    Solicitar NOMBRE_JUGADOR por teclado
+    
+    Tablero_Barcos_Jugador = Generar Matriz de 10x10 vacía
+    Tablero_Disparos_Jugador = Generar Matriz de 10x10 vacía
+    Tablero_Barcos_Maquina = Generar Matriz de 10x10 vacía
+    Tablero_Disparos_Maquina = Generar Matriz de 10x10 vacía
+    
+    Colocar Flota Aleatoria en Tablero_Barcos_Jugador
+    Colocar Flota Aleatoria en Tablero_Barcos_Maquina
+    
+    TURNO_JUGADOR = SorteoAleatorio(True, False)
+    JUEGO_ACTIVO = True
+    
+    MIENTRAS JUEGO_ACTIVO SEA VERDADERO:
+        SI TURNO_JUGADOR ES VERDADERO ENTONCES:
+            Mostrar Tableros del Jugador formateados a ancho fijo
+            
+            REPETIR:
+                Leer FILA_ENTRADA
+                SI FILA_ENTRADA está entre 0 y 9 ENTONCES Fila_Valida = True
+            HASTA QUE Fila_Valida sea Verdadero
+            
+            REPETIR:
+                Leer COLUMNA_ENTRADA
+                SI COLUMNA_ENTRADA está entre 0 y 9 ENTONCES Columna_Valida = True
+            HASTA QUE Columna_Valida sea Verdadero
+            
+            Contar IMPACTOS_ANTES en Tablero_Disparos_Jugador
+            ACIERTO = Ejecutar Disparo en coordenadas (FILA_ENTRADA, COLUMNA_ENTRADA)
+            
+            SI ACIERTO ES VERDADERO ENTONCES:
+                IMPACTOS_ACTUALES = IMPACTOS_ANTES + 1
+                Mostrar mensaje de Ascenso Militar usando variables.rango_jugador[IMPACTOS_ACTUALES]
+                Mostrar número de barcos enemigos hundidos del total
+                
+                SI NO quedan barcos en Tablero_Barcos_Maquina ENTONCES:
+                    Mostrar mensaje de Victoria ("Has ganado la guerra y alcanzado el rango de Capitán General")
+                    JUEGO_ACTIVO = False
+            SINO:
+                Mostrar "¡AGUA!"
+                TURNO_JUGADOR = False
+                
+        SINO (Turno de la Máquina):
+            SI IA_MODO_CAZA es Verdadero Y quedan objetivos en Cola_Adyacentes ENTONCES:
+                Coordenada_Maquina = Extraer primer elemento de Cola_Adyacentes
+            SINO:
+                REPETIR:
+                    Coordenada_Maquina = Generar Fila y Columna aleatorias
+                HASTA QUE Coordenada_Maquina no haya sido disparada previamente
+                
+            ACIERTO_MAQUINA = Ejecutar Disparo en Coordenada_Maquina contra el Jugador
+            
+            SI ACIERTO_MAQUINA ES VERDADERO ENTONCES:
+                IA_MODO_CAZA = True
+                Nuevas_Vecinas = Calcular casillas adyacentes válidas (dentro de rango y no disparadas)
+                Añadir Nuevas_Vecinas a Cola_Adyacentes (evitando duplicados)
+                Mostrar número de barcos aliados hundidos
+                
+                SI NO quedan barcos en Tablero_Barcos_Jugador ENTONCES:
+                    Mostrar "¡HAS PERDIDO LA GUERRA!"
+                    JUEGO_ACTIVO = False
+            SINO:
+                Mostrar "La máquina ha disparado al agua"
+                SI Cola_Adyacentes está vacía ENTONCES IA_MODO_CAZA = False
+                TURNO_JUGADOR = True
+                
+    FIN MIENTRAS
+FIN ALGORITMO
+
 ````
