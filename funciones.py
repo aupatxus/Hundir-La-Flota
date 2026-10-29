@@ -8,6 +8,7 @@
 # colocar_flota(tablero)
 # comprobar_fin_juego(tablero_barcos)
 # mostrar_tableros_jugador(tablero_barcos, tablero_disparos)
+# obtener_adyacentes_validas(casilla, tablero_disparos_rival)
 
 import numpy as np
 import variables
@@ -114,3 +115,16 @@ def mostrar_tableros_jugador(tablero_barcos, tablero_disparos):
     for i, fila in enumerate(tablero_disparos):
         print(str(i) + " ".join(fila))
     print("*******************************\n")
+
+def obtener_adyacentes_validas(casilla, tablero_disparos_rival):
+    """Devuelve una lista de casillas vecinas (N, S, E, O) válidas y no disparadas."""
+    fila, columna = casilla
+    adyacentes = []
+    movimientos = [(-1, 0), (1, 0), (0, -1), (0, 1)] # Posibles movimientos: Arriba, Abajo, Izquierda, Derecha
+    for df, dc in movimientos:
+        nueva_f = fila + df
+        nueva_c = columna + dc
+        if 0 <= nueva_f < variables.TAMANO_TABLERO and 0 <= nueva_c < variables.TAMANO_TABLERO: # Comprobar que está dentro del tablero
+            if tablero_disparos_rival[nueva_f, nueva_c] == variables.AGUA: # Comprobar que no se haya disparado ya en esa casilla (que siga siendo AGUA o BARCO oculto)
+                adyacentes.append((nueva_f, nueva_c))
+    return adyacentes

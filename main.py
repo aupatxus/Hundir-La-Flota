@@ -60,7 +60,7 @@ while juego_activo:
         # Ejecutando el disparo 
         acierto = funciones.disparar(casilla_disparo, tablero_barcos_rival, tablero_disparos_jugador)
         if acierto:
-            print("\nTOCADO! 💥 Tu disparo ha acertado en uno de mis barcos 🚢💥... ")
+            print("\nTOCADO! 💥 Tu disparo ha acertado en uno de los barcos enemigos 🚢💥... ")
             # Al comprobar el fin del juego, si es verdadero, termina la partida
             if funciones.comprobar_fin_juego(tablero_barcos_rival):
                 print("\n¡ENHORABUENA", nombre_jugador,"!. Has 🔥 TOCADO Y HUNDIDO 🔥 todos los barcos de la máquina. ¡HAS GANADO!")
@@ -69,21 +69,44 @@ while juego_activo:
             print("\n¡AGUA! 💦 Has fallado tu disparo.")
             turno_jugador = False # Cambio de turno
 
-    else: #Es el turno de LA MÁQUINA
+
+    else: # Es el turno de LA MÁQUINA
         print("\nEs el turno de LA MÁQUINA 🤖...")
-        # Disparo aleatorio 
-        fila_maquina = np.random.randint(0, variables.TAMANO_TABLERO)
-        columna_maquina = np.random.randint(0, variables.TAMANO_TABLERO)
-        casilla_maquina = (fila_maquina, columna_maquina)
-        print("La máquina dispara a la casilla: 🎯 Fila:",fila_maquina,"y Columna:", columna_maquina)
-        
-        # gestión del disparo contra el jugador
+
+        if variables.IA_MODO_CAZA and variables.IA_ADYACENTES_PENDIENTES: # DETERMINAR COORDENADAS DE DISPARO
+            casilla_maquina = variables.IA_ADYACENTES_PENDIENTES.pop(0) # Extrae la siguiente casilla adyacente de la lista
+            fila_maquina, columna_maquina = casilla_maquina
+        else: # dispara al azar (si no está en modo caza o se le acabaron las adyacentes)
+            intento_valido = False 
+
+            while not intento_valido: # Aseguramos que no repita una casilla ya disparada al azar
+                fila_maquina = np.random.randint(0, variables.TAMANO_TABLERO)
+                columna_maquina = np.random.randint(0, variables.TAMANO_TABLERO)
+
+                if tablero_disparos_rival[fila_maquina, columna_maquina] == variables.AGUA:
+                    intento_valido = True
+            casilla_maquina = (fila_maquina, columna_maquina)
+
+        print("La máquina dispara a la casilla: 🎯 Fila:", fila_maquina, "y Columna:", columna_maquina)
         acierto_maquina = funciones.disparar(casilla_maquina, tablero_barcos_jugador, tablero_disparos_rival)
-        if acierto_maquina:
-            print("¡La máquina te ha TOCADO uno de tus barcos! 🚢💥...")
-            if funciones.comprobar_fin_juego(tablero_barcos_jugador):
-                print("\n¡Lo siento! La máquina ha 🔥 TOCADO Y HUNDIDO 🔥 todos tus barcos. ¡HAS PERDIDO", nombre_jugador,"! Gracias por jugar.")
+        
+        if acierto_maquina: # GESTIÓN DEL DISPARO CONTRA EL JUGADOR
+            print("¡La máquina te ha TOCADO uno de tus barcos! 🚢💥... la máquina activa el modo caza 🤬")
+            variables.IA_MODO_CAZA = True # ACTIVAR MODO CAZA
+            variables.IA_ULTIMO_TOCADO = casilla_maquina
+            nuevas_adyacentes = funciones.obtener_adyacentes_validas(casilla_maquina, tablero_disparos_rival) # Obtener nuevas adyacentes desde este nuevo impacto y sumarlas a la lista de objetivos
+            
+            for adyacente in nuevas_adyacentes:
+                if adyacente not in variables.IA_ADYACENTES_PENDIENTES:
+                    variables.IA_ADYACENTES_PENDIENTES.append(adyacente)
+        
+            if funciones.comprobar_fin_juego(tablero_barcos_jugador): # Comprobar si la máquina ha ganado
+                print("\n¡Lo siento! La máquina ha 🔥 TOCADO Y HUNDIDO 🔥 todos tus barcos. ¡HAS PERDIDO", nombre_jugador, "! Gracias por jugar.")
                 juego_activo = False
         else:
             print("La máquina ha disparado al AGUA... 💦")
+            
+            if len(variables.IA_ADYACENTES_PENDIENTES) == 0: # Si se quedó sin adyacentes que probar tras este fallo, apaga el modo caza
+                variables.IA_MODO_CAZA = False
+                
             turno_jugador = True # Cambio de turno
