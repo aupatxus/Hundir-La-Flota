@@ -64,13 +64,13 @@ Hundir La Flota http://es.battleship-game.org/
 3. Fase de Cierre (Finalización): Tras cada disparo acertado, el flujo pasa por comprobar_fin_juego(). En cuanto retorna True (no quedan 🚢), rompe el bucle cambiando juego_activo = False, imprime el ganador y el programa finaliza.
 
 
-## Flujo de datos
 
-mermaid
+## Flujograma (Diagrama de flujo)
 
+```mermaid
 graph TD
     %% Estilos de los nodos
-    classDef inicio e fill:#2ecc71,stroke:#27ae60,stroke-width:2px,color:#fff;
+    classDef inicio fill:#2ecc71,stroke:#27ae60,stroke-width:2px,color:#fff;
     classDef proceso fill:#3498db,stroke:#2980b9,stroke-width:2px,color:#fff;
     classDef decision fill:#f1c40f,stroke:#f39c12,stroke-width:2px,color:#000;
     classDef fin fill:#e74c3c,stroke:#c0392b,stroke-width:2px,color:#fff;
@@ -86,7 +86,7 @@ graph TD
     SorteoTurno -- Sorteo = 1 --> TurnoJugador[Turno: JUGADOR]:::proceso
     SorteoTurno -- Sorteo = 0 --> TurnoMaquina[Turno: MÁQUINA]:::proceso
 
-    %% Bucle de Juego (Mientras juego_activo sea True)
+    %% Bucle de Juego
     TurnoJugador --> MostrarTab[funciones.mostrar_tableros_jugador]:::proceso
     
     %% Validación Fila
@@ -104,8 +104,8 @@ graph TD
     DispararJugador --> ResultadoJugador{¿Acierto / TOCADO?}:::decision
     
     ResultadoJugador -- Sí 💥 --> FinJuegoRival{funciones.comprobar_fin_juego <br> ¿Rival sin barcos?}:::decision
-    FinJuegoRival -- Sí --> Ganaste([¡HAS GANADO! 🎉]):::fin
     FinJuegoRival -- No --> TurnoJugador
+    FinJuegoRival -- Sí --> Ganaste([¡HAS GANADO! 🎉]):::fin
     
     ResultadoJugador -- No ❌ --> CambiarTurnom[Cambio de Turno]:::proceso --> TurnoMaquina
 
@@ -115,13 +115,15 @@ graph TD
     DispararMaquina --> ResultadoMaquina{¿Acierto / TOCADO?}:::decision
     
     ResultadoMaquina -- Sí 💥 --> FinJuegoJugador{funciones.comprobar_fin_juego <br> ¿Jugador sin barcos?}:::decision
-    FinJuegoJugador -- Sí --> Perdiste([¡HAS PERDIDO! 🤖]):::fin
     FinJuegoJugador -- No --> TurnoMaquina
+    FinJuegoJugador -- Sí --> Perdiste([¡HAS PERDIDO! 🤖]):::fin
     
     ResultadoMaquina -- No ❌ --> CambiarTurnoJ[Cambio de Turno]:::proceso --> TurnoJugador
+```
 
 
 
+## Flujo de datos
 
 1. Estado Inicial de la Memoria (La Creación del Espacio de Datos)
 
