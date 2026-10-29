@@ -65,6 +65,9 @@ Hundir La Flota http://es.battleship-game.org/
 
 
 ## Flujo de datos
+
+mermaid
+
 graph TD
     %% Estilos de los nodos
     classDef inicio e fill:#2ecc71,stroke:#27ae60,stroke-width:2px,color:#fff;
