@@ -1,14 +1,6 @@
 # funciones.py
 # Este archivo contiene la lógica y mecánicas del juego: inicialización, colocación aleatoria, disparos, comprobaciones, ...
 
-# crear_tableros(tamaño)
-# colocar_barco(barco, tablero)
-# disparar(casilla, tablero_barcos, tablero_disparos)
-# crear_barco(eslora, tamaño_tablero=10)
-# colocar_flota(tablero)
-# comprobar_fin_juego(tablero_barcos)
-# mostrar_tableros_jugador(tablero_barcos, tablero_disparos)
-# obtener_adyacentes_validas(casilla, tablero_disparos_rival)
 
 import numpy as np
 import variables
@@ -18,6 +10,7 @@ def crear_tablero(tamano=variables.TAMANO_TABLERO):
     tablero = np.full((tamano, tamano), variables.AGUA, dtype=str)
     return tablero
 
+
 def colocar_barco(barco, tablero):
     """Coloca las casillas de un barco ('O') en el tablero dado."""
     for casilla in barco:
@@ -25,6 +18,7 @@ def colocar_barco(barco, tablero):
         columna = casilla[1]
         tablero[fila, columna] = variables.BARCO
     return tablero
+
 
 def disparar(casilla, tablero_barcos_defensor, tablero_disparos_atacante):
     """
@@ -47,6 +41,7 @@ def disparar(casilla, tablero_barcos_defensor, tablero_disparos_atacante):
         else: # Si ya se había disparado antes (X ó A), se queda igual pero se procesa como fallo y pérdida de turno
             pass
         return False
+
 
 def crear_barco(eslora, tablero):
     """
@@ -94,20 +89,6 @@ def crear_barco(eslora, tablero):
         else:
             return []
 
-'''
-def colocar_flota(tablero):
-    """Genera y coloca todos los barcos de la lista de esloras en el tablero de forma aleatoria."""
-    for eslora in variables.ESLORAS_BARCOS:
-        barco_colocado = False
-
-        while not barco_colocado: # Bucle de reintento hasta que el barco encuentra un sitio válido sin solaparse
-            lista_casillas = crear_barco(eslora, tablero)
-
-            if len(lista_casillas) > 0:
-                tablero = colocar_barco(lista_casillas, tablero)
-                barco_colocado = True
-    return tablero
-'''
 
 def colocar_flota(tablero, es_jugador=True):
     """Genera, coloca los barcos y guarda sus posiciones para el seguimiento de hundidos."""
@@ -131,6 +112,7 @@ def colocar_flota(tablero, es_jugador=True):
         
     return tablero
 
+
 def comprobar_fin_juego(tablero_barcos):
     """Devuelve True si ya no quedan barcos ('O') en el tablero."""
     quedan_barcos = variables.BARCO in tablero_barcos
@@ -139,6 +121,7 @@ def comprobar_fin_juego(tablero_barcos):
         return True
     else:
         return False
+
 
 def mostrar_tableros_jugador(tablero_barcos, tablero_disparos):
     """Muestra por terminal o consola los tableros del jugador con coordenadas filas y columnas."""
@@ -158,6 +141,7 @@ def mostrar_tableros_jugador(tablero_barcos, tablero_disparos):
 
     print("*******************************\n")
 
+
 def obtener_adyacentes_validas(casilla, tablero_disparos_rival):
     """Devuelve una lista de casillas vecinas (N, S, E, O) válidas y no disparadas."""
     fila, columna = casilla
@@ -173,6 +157,7 @@ def obtener_adyacentes_validas(casilla, tablero_disparos_rival):
                 adyacentes.append((nueva_f, nueva_c))
 
     return adyacentes
+
 
 def contar_barcos_hundidos(flota_registro, tablero_barcos):
     """

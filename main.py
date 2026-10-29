@@ -24,7 +24,6 @@ tablero_disparos_rival = funciones.crear_tablero()
 tablero_barcos_jugador = funciones.colocar_flota(tablero_barcos_jugador, es_jugador=True)
 tablero_barcos_rival = funciones.colocar_flota(tablero_barcos_rival, es_jugador=False)
 
-
 # Determinar aleatoriamente quién empieza la partida (el turno de inicio)
 turno_jugador = False
 turno_de_inicio = np.random.randint(0, 2) # 1 = Turno Jugador, 0 = Turno Máquina
@@ -71,14 +70,14 @@ while juego_activo:
         acierto = funciones.disparar(casilla_disparo, tablero_barcos_rival, tablero_disparos_jugador)
         
         if acierto:
-            print("\n💥 ¡TOCADO! Tu disparo ha acertado en uno de los barcos enemigos 🚢💥... ")
+            print("\n💥 ¡TOCADO! 🔥 Tu disparo ha acertado en uno de los barcos enemigos 🚢💥🔥... ")
             impactos_actuales = impactos_antes + 1 # Calculamos los rangos militares usando los impactos actualizados
             
             if impactos_actuales < len(variables.rango_jugador): # Controlamos que el índice no supere el tamaño de la lista
                 rango_anterior = variables.rango_jugador[impactos_antes]
                 rango_nuevo = variables.rango_jugador[impactos_actuales]
                 print("⚓ INFORME DE LA ARMADA para:", nombre_jugador.upper(), "🎖️")
-                print("¡Impacto confirmado! 👉 Asciendes de", rango_anterior, "al rango de:", rango_nuevo.upper(), "🎖️")
+                print("⚓ ¡Impacto confirmado! 👉 Asciendes del rango de", rango_anterior, "al rango de:", rango_nuevo.upper(), "🎖️")
             
             # CÁLCULO Y MUESTRA DE BARCOS HUNDIDOS DEL ENEMIGO
             total_barcos = len(variables.ESLORAS_BARCOS)
@@ -86,8 +85,8 @@ while juego_activo:
             print("ℹ️ 📄 Informe de Inteligencia 📢 Se han hundido "+ str(maquina_hundidos)+ " barcos de la flota de "+str(total_barcos)+" barcos enemigos.")
             
             if funciones.comprobar_fin_juego(tablero_barcos_rival): # Al comprobar el fin del juego, si es verdadero, termina la partida
-                print("\n📣 ¡ENHORABUENA", nombre_jugador, "!. Has 🔥 TOCADO Y HUNDIDO 🔥 todos los barcos enemigos")
-                print("\n🏆 ¡HAS GANADO LA GUERRA! Y alcanzado el rango de:", variables.rango_jugador[-1].upper() )
+                print("\n📣 ¡ENHORABUENA", nombre_jugador, "!. 🥳 🎉 Has TOCADO Y HUNDIDO 🔥 toda la flota enemiga")
+                print("\n🏆 ¡HAS GANADO LA GUERRA! 🎖️ Y has alcanzado el rango de:", variables.rango_jugador[-1].upper() )
                 juego_activo = False
 
         else:
@@ -96,7 +95,7 @@ while juego_activo:
 
 
     else: # Es el turno de LA MÁQUINA
-        print("\nEs el turno de LA MÁQUINA 🤖...")
+        print("Es el turno de LA MÁQUINA 🤖...")
 
         if variables.IA_MODO_CAZA and variables.IA_ADYACENTES_PENDIENTES: # DETERMINAR COORDENADAS DE DISPARO
             casilla_maquina = variables.IA_ADYACENTES_PENDIENTES.pop(0) # Extrae la siguiente casilla adyacente de la lista
@@ -132,10 +131,10 @@ while juego_activo:
                     variables.IA_ADYACENTES_PENDIENTES.append(adyacente)
 
             if funciones.comprobar_fin_juego(tablero_barcos_jugador): # Comprobar si la máquina ha ganado
-                print("\n¡Lo siento! 🤖 La máquina ha 🔥 TOCADO Y HUNDIDO 🔥 todos tus barcos. 📣 ¡HAS PERDIDO LA GUERRA", nombre_jugador, "! Gracias por jugar.")
+                print("\n¡Lo siento! 🤖 La máquina ha TOCADO Y HUNDIDO 🔥 todos tus barcos. 📣 ¡HAS PERDIDO LA GUERRA", nombre_jugador, "! Gracias por jugar.")
                 juego_activo = False
         else:
-            print("La máquina ha disparado al AGUA... 💦")
+            print("🤖 La máquina ha disparado al AGUA... 💦")
             
             if len(variables.IA_ADYACENTES_PENDIENTES) == 0: # Si se quedó sin adyacentes que probar tras este fallo, apaga el modo caza
                 variables.IA_MODO_CAZA = False
