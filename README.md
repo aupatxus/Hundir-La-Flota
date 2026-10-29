@@ -67,6 +67,8 @@ Hundir La Flota http://es.battleship-game.org/
 
 ## Flujograma (Diagrama de flujo)
 
+
+
 ```mermaid
 graph TD
     %% Estilos de los nodos
@@ -76,50 +78,57 @@ graph TD
     classDef fin fill:#e74c3c,stroke:#c0392b,stroke-width:2px,color:#fff;
 
     %% Flujo Principal
-    Inicio([Inicio del Juego]) :::inicio --> InitVars[Cargar variables.py <br> TAMANO_TABLERO, Iconos, ESLORAS_BARCOS]:::proceso
-    InitVars --> InputName[Input: Nombre del Jugador]:::proceso
-    InputName --> InitTableros[funciones.crear_tablero <br> Inicializar los 4 tableros]:::proceso
-    InitTableros --> ColocarFlotas[funciones.colocar_flota <br> Colocación aleatoria de barcos]:::proceso
+    Inicio([Inicio del Juego]) --> InitVars[Cargar variables.py <br> TAMANO_TABLERO, Iconos, ESLORAS_BARCOS]
+    InitVars --> InputName[Input: Nombre del Jugador]
+    InputName --> InitTableros[funciones.crear_tablero <br> Inicializar los 4 tableros]
+    InitTableros --> ColocarFlotas[funciones.colocar_flota <br> Colocación aleatoria de barcos]
     
     %% Sorteo de Turno
-    ColocarFlotas --> SorteoTurno{¿Quién empieza?<br>Sorteo aleatorio}:::decision
-    SorteoTurno -- Sorteo = 1 --> TurnoJugador[Turno: JUGADOR]:::proceso
-    SorteoTurno -- Sorteo = 0 --> TurnoMaquina[Turno: MÁQUINA]:::proceso
+    ColocarFlotas --> SorteoTurno{¿Quién empieza?<br>Sorteo aleatorio}
+    SorteoTurno -- Sorteo = 1 --> TurnoJugador[Turno: JUGADOR]
+    SorteoTurno -- Sorteo = 0 --> TurnoMaquina[Turno: MÁQUINA]
 
     %% Bucle de Juego
-    TurnoJugador --> MostrarTab[funciones.mostrar_tableros_jugador]:::proceso
+    TurnoJugador --> MostrarTab[funciones.mostrar_tableros_jugador]
     
     %% Validación Fila
-    MostrarTab --> InputFila[Input: Fila del disparo]:::proceso
-    InputFila --> ValidaFila{¿Fila es dígito entero <br> y está en rango?}:::decision
-    ValidaFila -- No --> ErrorFila[Mostrar Error Fila]:::proceso --> InputFila
+    MostrarTab --> InputFila[Input: Fila del disparo]
+    InputFila --> ValidaFila{¿Fila es dígito entero <br> y está en rango?}
+    ValidaFila -- No --> ErrorFila[Mostrar Error Fila] --> InputFila
     
     %% Validación Columna
-    ValidaFila -- Sí --> InputCol[Input: Columna del disparo]:::proceso
-    InputCol --> ValidaCol{¿Columna es dígito entero <br> y está en rango?}:::decision
-    ValidaCol -- No --> ErrorCol[Mostrar Error Columna]:::proceso --> InputCol
+    ValidaFila -- Sí --> InputCol[Input: Columna del disparo]
+    InputCol --> ValidaCol{¿Columna es dígito entero <br> y está en rango?}
+    ValidaCol -- No --> ErrorCol[Mostrar Error Columna] --> InputCol
     
     %% Procesar Disparo Jugador
-    ValidaCol -- Sí --> DispararJugador[funciones.disparar contra Rival]:::proceso
-    DispararJugador --> ResultadoJugador{¿Acierto / TOCADO?}:::decision
+    ValidaCol -- Sí --> DispararJugador[funciones.disparar contra Rival]
+    DispararJugador --> ResultadoJugador{¿Acierto / TOCADO?}
     
-    ResultadoJugador -- Sí 💥 --> FinJuegoRival{funciones.comprobar_fin_juego <br> ¿Rival sin barcos?}:::decision
+    ResultadoJugador -- Sí 💥 --> FinJuegoRival{funciones.comprobar_fin_juego <br> ¿Rival sin barcos?}
     FinJuegoRival -- No --> TurnoJugador
-    FinJuegoRival -- Sí --> Ganaste([¡HAS GANADO! 🎉]):::fin
+    FinJuegoRival -- Sí --> Ganaste([¡HAS GANADO! 🎉])
     
-    ResultadoJugador -- No ❌ --> CambiarTurnom[Cambio de Turno]:::proceso --> TurnoMaquina
+    ResultadoJugador -- No ❌ --> CambiarTurnom[Cambio de Turno] --> TurnoMaquina
 
     %% Turno de la Máquina
-    TurnoMaquina --> DisparoAleatorio[Generar Coordenadas <br> Aleatorias de la Máquina]:::proceso
-    DisparoAleatorio --> DispararMaquina[funciones.disparar contra Jugador]:::proceso
-    DispararMaquina --> ResultadoMaquina{¿Acierto / TOCADO?}:::decision
+    TurnoMaquina --> DisparoAleatorio[Generar Coordenadas <br> Aleatorias de la Máquina]
+    DisparoAleatorio --> DispararMaquina[funciones.disparar contra Jugador]
+    DispararMaquina --> ResultadoMaquina{¿Acierto / TOCADO?}
     
-    ResultadoMaquina -- Sí 💥 --> FinJuegoJugador{funciones.comprobar_fin_juego <br> ¿Jugador sin barcos?}:::decision
+    ResultadoMaquina -- Sí 💥 --> FinJuegoJugador{funciones.comprobar_fin_juego <br> ¿Jugador sin barcos?}
     FinJuegoJugador -- No --> TurnoMaquina
-    FinJuegoJugador -- Sí --> Perdiste([¡HAS PERDIDO! 🤖]):::fin
+    FinJuegoJugador -- Sí --> Perdiste([¡HAS PERDIDO! 🤖])
     
-    ResultadoMaquina -- No ❌ --> CambiarTurnoJ[Cambio de Turno]:::proceso --> TurnoJugador
+    ResultadoMaquina -- No ❌ --> CambiarTurnoJ[Cambio de Turno] --> TurnoJugador
+
+    %% Asignación limpia de clases (Evita el Parse Error en GitHub)
+    class Inicio inicio;
+    class InitVars,InputName,InitTableros,ColocarFlotas,TurnoJugador,TurnoMaquina,MostrarTab,InputFila,InputCol,ErrorFila,ErrorCol,DispararJugador,CambiarTurnom,DisparoAleatorio,DispararMaquina,CambiarTurnoJ proceso;
+    class SorteoTurno,ValidaFila,ValidaCol,ResultadoJugador,FinJuegoRival,ResultadoMaquina,FinJuegoJugador decision;
+    class Ganaste,Perdiste fin;
 ```
+
 
 
 
