@@ -26,3 +26,6 @@ IA_ADYACENTES_PENDIENTES = []
 # Registros de las estructuras de barcos para el conteo de hundidos
 FLOTA_JUGADOR = []
 FLOTA_MAQUINA = []
+
+# Rangos militares (ascendemos a medida que hundimos un barco enemigo)
+rango_jugador = ["Sargento", "Sargento primero", "Brigada", "Subteniente", "Suboficial mayor", "Alférez de fragata", "Alférez de navío", "Teniente de navío", "Capitán de corbeta", "Capitán de fragata", "Capitán de navío","Contralmirante", "Vicealmirante", "Almirante", "Almirante general", "Capitán general"]
